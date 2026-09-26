@@ -11,6 +11,7 @@ function _safeStringifyReplacer(seen: WeakSet<object>) {
 
     seen.add(value);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newValue: Record<string, any> = Array.isArray(value) ? [] : {};
     for (const [key2, value2] of Object.entries(value)) {
       newValue[key2] = _safeStringifyReplacer(seen)(key2, value2);

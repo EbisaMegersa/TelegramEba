@@ -5,14 +5,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host --port 8071 --mode development",
+    "dev": "vite --host 0.0.0.0 --port 3000 --mode development",
     "build": "vite build",
     "preview": "vite preview --host",
     "lint": "cross-env DEBUG=eslint:cli-engine eslint --cache --ext=ts,tsx --fix src",
     "format": "prettier --write \"src/**/*.@(ts|tsx|)\""
   },
   "dependencies": {
-    "@open-yes/game-client-sdk": "workspace:*",
+    "@open-yes/game-client-sdk": "*",
     "@tsparticles/all": "^3.7.1",
     "@tsparticles/engine": "^3.7.1",
     "@tsparticles/react": "^3.0.0",
@@ -35,6 +35,7 @@
     "@types/react-dom": "^18.3.5",
     "@types/styled-components": "^5.1.34",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^4.3.4",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.1",

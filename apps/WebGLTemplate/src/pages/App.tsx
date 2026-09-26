@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import LoadAssets from '@/components/LoadAssets';
 import { AnimatePresence } from 'framer-motion';
 import { Unity, useUnityContext } from 'react-unity-webgl';
@@ -32,10 +33,56 @@ const App = () => {
     productVersion: '0.1',
   });
 
+  const [logs, setLogs] = useState<string[]>([]);
+
+  useEffect(() => {
+    const originalError = console.error;
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+
+    const addLog = (type: string, msg: string) => {
+      setLogs((prev) => [...prev.slice(-49), `[${type}] ${msg}`]);
+    };
+
+    console.error = (...args) => {
+      addLog('ERROR', args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      originalError.apply(console, args);
+    };
+
+    console.warn = (...args) => {
+      addLog('WARN', args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      originalWarn.apply(console, args);
+    };
+
+    console.log = (...args) => {
+      addLog('LOG', args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      originalLog.apply(console, args);
+    };
+
+    const handleError = (event: ErrorEvent) => {
+      addLog('UNCAUGHT', `${event.message} at ${event.filename}:${event.lineno}`);
+    };
+
+    const handleRejection = (event: PromiseRejectionEvent) => {
+      addLog('REJECTION', String(event.reason));
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleRejection);
+
+    return () => {
+      console.error = originalError;
+      console.warn = originalWarn;
+      console.log = originalLog;
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleRejection);
+    };
+  }, []);
+
   const progress = Math.round(loadingProgression * 100);
   return (
     <main className="w-screen h-screen of-hidden">
-      <AnimatePresence>{!isLoaded && <LoadAssets progress={progress} />}</AnimatePresence>
+      <AnimatePresence>{!isLoaded && <LoadAssets progress={progress} logs={logs} />}</AnimatePresence>
       <Unity unityProvider={unityProvider} className="w-screen h-screen" />
     </main>
   );

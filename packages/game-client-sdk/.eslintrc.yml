@@ -1,2 +1,2 @@
 extends:
-  - '@atp-tools/eslint-config/esm-node.yml'
+  - '@open-yes/eslint-config/esm-node.yml'
